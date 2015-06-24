@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/ubercow/twitcher",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/braintree/manners",
+			"Comment": "0.4.0-5-g811f400",
+			"Rev": "811f40057a260997d28e4e49a01d77faaa6263f1"
+		}
+	]
+}
