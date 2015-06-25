@@ -7,7 +7,17 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"unsafe"
 )
+
+func GetSize() (width, height int) {
+	var dimensions [4]uint16
+	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(1), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&dimensions)), 0, 0, 0); err != 0 {
+		return -1, -1
+	}
+
+	return int(dimensions[1]), int(dimensions[0])
+}
 
 func StartProgram(program string, url string) {
 	binary, _ := exec.LookPath(program)
@@ -18,8 +28,9 @@ func StartProgram(program string, url string) {
 }
 
 func Truncate(s string, max int) string {
-	if len([]rune(s)) > max {
-		return string([]rune(s)[:max])
+	r := []rune(s)
+	if len(r) > max {
+		return string(r[:max])
 	} else {
 		return s
 	}
