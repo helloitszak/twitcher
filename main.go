@@ -33,6 +33,7 @@ type twitchStream struct {
 }
 
 type twitchChannel struct {
+	Status      string `json:"status"`
 	DisplayName string `json:"display_name"`
 	Url         string `json:"url"`
 }
@@ -187,30 +188,23 @@ func main() {
 	var fr twitchFollowedStreamsResponse
 	json.Unmarshal(body, &fr)
 
-	thing := make([][]string, len(fr.Streams))
-
-	pads := []util.PadMode{
-		util.LeftPad,
-		util.LeftPad,
-		util.RightPad,
-		util.RightPad,
-		util.RightPad,
-		util.LeftPad,
-		util.RightPad,
-		util.RightPad}
+	sets := make([][]util.PadSet, len(fr.Streams))
 	for i, s := range fr.Streams {
-		thing[i] = []string{
-			strconv.Itoa(i+1) + ".",
-			s.Channel.DisplayName,
-			"-",
-			s.Game,
-			"-",
-			strconv.Itoa(s.Viewers),
-			"viewers -",
-			strconv.Itoa(s.VideoHeight) + "p"}
+		sets[i] = []util.PadSet{
+			*util.P(strconv.Itoa(i+1)+".", util.LeftPad),
+			*util.P(s.Channel.DisplayName, util.LeftPad),
+			*util.P("-", util.RightPad),
+			*util.P(util.Truncate(s.Channel.Status, 50), util.RightPad),
+			*util.P("-", util.RightPad),
+			*util.P(s.Game, util.RightPad),
+			*util.P("-", util.RightPad),
+			*util.P(strconv.Itoa(s.Viewers), util.LeftPad),
+			*util.P("viewers -", util.RightPad),
+			*util.P(strconv.Itoa(s.VideoHeight)+"p", util.RightPad)}
+
 	}
 
-	ss := util.FormatStreams(thing, pads)
+	ss := util.PadFormat(sets)
 
 	for _, s := range ss {
 		fmt.Println(s)

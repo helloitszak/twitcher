@@ -17,9 +17,18 @@ func StartProgram(program string, url string) {
 	syscall.Exec(binary, args, env)
 }
 
+func Truncate(s string, max int) string {
+	if len([]rune(s)) > max {
+		return string([]rune(s)[:max])
+	} else {
+		return s
+	}
+}
+
 func Pick(max int) int {
 	var input string
 	for {
+		fmt.Print("Pick: ")
 		_, err := fmt.Scanln(&input)
 		if err != nil {
 			fmt.Println(err)
@@ -40,6 +49,18 @@ func Pick(max int) int {
 	}
 }
 
+type PadSet struct {
+	Str string
+	Pad PadMode
+}
+
+func P(str string, mode PadMode) *PadSet {
+	return &PadSet{
+		Str: str,
+		Pad: mode,
+	}
+}
+
 type PadMode int
 
 const (
@@ -48,10 +69,10 @@ const (
 )
 
 func Pad(str string, pad rune, length int, mode PadMode) string {
-	if len(str) >= length {
+	if len([]rune(str)) >= length {
 		return str
 	} else {
-		c := length - len(str)
+		c := length - len([]rune(str))
 		b := make([]rune, c)
 		for i := range b {
 			b[i] = pad
@@ -66,14 +87,21 @@ func Pad(str string, pad rune, length int, mode PadMode) string {
 
 }
 
-func FormatStreams(input [][]string, pad []PadMode) []string {
+func PadFormat(input [][]PadSet) []string {
 	output := make([]string, len(input))
-	paddings := make([]int, len(pad))
+	paddings := make([]int, len(input[0]))
 
 	for _, s := range input {
-		for ci, c := range paddings {
-			cl := len(s[ci])
-			if cl > c {
+		plen := len(s)
+		if plen > len(paddings) {
+			newp := make([]int, plen)
+			copy(paddings, newp)
+			paddings = newp
+		}
+
+		for ci, p := range s {
+			cl := len([]rune(p.Str))
+			if cl > paddings[ci] {
 				paddings[ci] = cl
 			}
 		}
@@ -81,8 +109,8 @@ func FormatStreams(input [][]string, pad []PadMode) []string {
 
 	for sid, s := range input {
 		outcol := make([]string, len(paddings))
-		for ci, c := range paddings {
-			outcol[ci] = Pad(s[ci], ' ', c, pad[ci])
+		for ci, c := range s {
+			outcol[ci] = Pad(c.Str, ' ', paddings[ci], c.Pad)
 		}
 		output[sid] = strings.Join(outcol, " ")
 	}
