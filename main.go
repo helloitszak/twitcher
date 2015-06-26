@@ -100,6 +100,7 @@ func main() {
 	stream := consolePicker(fr.Streams)
 
 	if *program != "" {
+		fmt.Println("Starting", *program)
 		util.StartProgram(*program, stream.Channel.Url)
 	} else if tp := os.Getenv("TWITCHER_PROGRAM"); tp != "" {
 		util.StartProgram(tp, stream.Channel.Url)
