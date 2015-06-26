@@ -3,9 +3,22 @@
 	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
+			"ImportPath": "github.com/alecthomas/template",
+			"Rev": "b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0"
+		},
+		{
+			"ImportPath": "github.com/alecthomas/units",
+			"Rev": "6b4e7dc5e3143b85ea77909c72caf89416fc2915"
+		},
+		{
 			"ImportPath": "github.com/braintree/manners",
 			"Comment": "0.4.0-5-g811f400",
 			"Rev": "811f40057a260997d28e4e49a01d77faaa6263f1"
+		},
+		{
+			"ImportPath": "gopkg.in/alecthomas/kingpin.v2",
+			"Comment": "v2.0.10",
+			"Rev": "e1f37920c1d0ced4d1c92f9526a2a433183f02e9"
 		}
 	]
 }
