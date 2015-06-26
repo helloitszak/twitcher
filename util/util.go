@@ -1,14 +1,34 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
 )
+
+var (
+	winCmd   = "url.dll,FileProtocolHandler"
+	runDll32 = filepath.Join(os.Getenv("SYSTEMROOT"), "System32", "rundll32.exe")
+)
+
+func OpenCommand(url string) (*exec.Cmd, error) {
+	if runtime.GOOS == "windows" {
+		return exec.Command(runDll32, winCmd, url), nil
+	} else if runtime.GOOS == "darwin" {
+		return exec.Command("open", url), nil
+	} else if runtime.GOOS == "linux" {
+		return exec.Command("xdg-open", url), nil
+	} else {
+		return &exec.Cmd{}, errors.New("Sorry bro your hipster OS isn't supported")
+	}
+}
 
 func GetSize() (width, height int) {
 	var dimensions [4]uint16

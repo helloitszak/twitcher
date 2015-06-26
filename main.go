@@ -66,6 +66,9 @@ func consolePicker(streams []twitch.Stream) twitch.Stream {
 
 func main() {
 	forceAuthenticate := kingpin.Flag("auth", "Force Authenticate.").Default("false").Short('a').Bool()
+	program := kingpin.Flag("program", "Launch this instead of web browser").Default("").Short('p').String()
+
+	kingpin.Parse()
 
 	configPath := filepath.Join(configDir(), "config.json")
 	keyPath := filepath.Join(configDir(), "key")
@@ -96,5 +99,16 @@ func main() {
 
 	stream := consolePicker(fr.Streams)
 
-	util.StartProgram("livestreamer", stream.Channel.Url)
+	if *program != "" {
+		util.StartProgram(*program, stream.Channel.Url)
+	} else if tp := os.Getenv("TWITCHER_PROGRAM"); tp != "" {
+		util.StartProgram(tp, stream.Channel.Url)
+	} else {
+		p, err := util.OpenCommand(stream.Channel.Url)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		p.Start()
+	}
 }
