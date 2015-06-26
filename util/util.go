@@ -20,7 +20,8 @@ var (
 
 func OpenCommand(url string) (*exec.Cmd, error) {
 	if runtime.GOOS == "windows" {
-		return exec.Command(runDll32, winCmd, url), nil
+		u := strings.Replace(url, "&", "^&", -1)
+		return exec.Command(runDll32, winCmd, u), nil
 	} else if runtime.GOOS == "darwin" {
 		return exec.Command("open", url), nil
 	} else if runtime.GOOS == "linux" {
